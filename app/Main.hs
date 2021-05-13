@@ -1,6 +1,8 @@
 module Main where
 
-import Lib
+import Language 
+import Evaluator 
+import Parsing 
 
 main :: IO ()
-main = someFunc
+main = putStrLn "Hello world"
