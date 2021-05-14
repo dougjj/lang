@@ -64,6 +64,8 @@ evalExpr (Function str args) = do
     vals <- mapM evalExpr args 
     (vars, body) <- gets $ lookupFunc str 
     modify $ newBindEnv vars vals 
+    -- newEnv <- get 
+    -- lift $ print newEnv 
     doStatement body 
     modify safeParent
     return 1

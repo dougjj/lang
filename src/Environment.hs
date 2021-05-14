@@ -17,14 +17,14 @@ lookupVar :: String -> Environment -> Number
 lookupVar str env = case M.lookup str (variables env) of 
         Just n -> n 
         Nothing -> case parentEnv env of 
-            Nothing -> error $ "no binding for " ++ str 
+            Nothing -> error $ "no var binding for " ++ str ++ show env 
             Just parent -> lookupVar str parent
 
 lookupFunc :: String -> Environment -> ([String], Statement)
 lookupFunc str env = case M.lookup str (functions env) of 
     Just f -> f
     Nothing -> case parentEnv env of 
-        Nothing -> error $ "no binding for " ++ str
+        Nothing -> error $ "no func binding for " ++ str
         Just parent -> lookupFunc str parent
 
 newBindEnv :: [String] -> [Number] -> Environment -> Environment 

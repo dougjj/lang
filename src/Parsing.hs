@@ -1,6 +1,6 @@
 module Parsing where
 
-import Language 
+import Language
 
 import Text.Parsec
 import Text.Parsec.Language
@@ -11,7 +11,7 @@ import Text.Parsec.Expr
 import qualified Data.Map as M
 import Control.Monad.State as S
 import Control.Monad.Identity
-import Text.Read ( readMaybe ) 
+import Text.Read ( readMaybe )
 
 style :: GenLanguageDef String u Identity
 style = javaStyle
@@ -24,7 +24,7 @@ style = javaStyle
 lexer :: P.GenTokenParser String u Identity
 lexer = P.makeTokenParser style
 parens, braces  :: ParsecT String u Identity a -> ParsecT String u Identity a
-parens = P.parens lexer 
+parens = P.parens lexer
 braces      = P.braces lexer
 identifier :: Parser String
 identifier  = P.identifier lexer
@@ -94,18 +94,26 @@ logicalAnd, logicalOr :: Parser (Expression -> Expression -> Expression)
 logicalAnd = reservedOp "&&" >> return (BinaryOp LogicalAnd)
 logicalOr = reservedOp "||" >> return (BinaryOp LogicalOr)
 
+
+-- TODO ! Can remove try from function by factorising parser correctly
 expression, variable, number, term :: Parser Expression
 expression = buildExpressionParser table term
-term = parens expression <|> variable <|> number
+term = parens expression <|> try function <|> variable <|> number
 variable = Variable <$> identifier
 number = Number <$> integer
+function = do
+    name <- identifier
+    Function name <$> argList
+
+argList :: Parser [Expression]
+argList = parens $ sepBy expression (char ',' )
 
 statement = braces block
         <|> ifThenElse
         <|> printer
         <|> assign
-        <|> functionAssign 
-        <|> input 
+        <|> functionAssign
+        <|> input
 
 block = chainl1 statement semicolon
 

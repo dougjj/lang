@@ -14,8 +14,8 @@ runner :: States IO ()
 runner = do 
     line <- lift getLine 
     doStatement $ parseBlock line 
-    env <- get 
-    lift $ print env
+    -- env <- get 
+    -- lift $ print env
 
     runner 
 
