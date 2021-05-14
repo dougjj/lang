@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 2b3d332a248d7ba57ffd30f9e4e3483d2e1a4f0f4d90e5de9a9fb2232cc70954
+-- hash: e3b3b9f0e749a54f98fe168886ed6377f8070fac490b2c414ac12025056dabad
 
 name:           lang
 version:        0.1.0.0
@@ -27,10 +27,12 @@ source-repository head
 
 library
   exposed-modules:
+      Environment
       Evaluator
       Language
-      Lib
       Parsing
+      Program
+      Test
   other-modules:
       Paths_lang
   hs-source-dirs:
