@@ -3,7 +3,7 @@ module Program where
 import Control.Monad.State
 import Environment
 import Language
-
+import Control.Monad ( when )
 
 type States m a = StateT Environment m a
 
@@ -31,7 +31,11 @@ doStatement (Semicolon s1 s2) = doStatement s1 >> doStatement s2
 doStatement (FunctionAssignment str args body) = do
     modify $ defineFunc str (args, body)
 
-boolToInt :: Bool -> Number 
+doStatement s@(WhileDo expr body) = do
+    val <- evalExpr expr
+    when (val /= 0) $ doStatement body >> doStatement s
+
+boolToInt :: Bool -> Number
 boolToInt b = if b then 1 else 0
 
 evalExpr :: Expression -> States IO Number
@@ -52,20 +56,20 @@ evalExpr (BinaryOp op x y) = do
         Geq -> boolToInt $ xx >= yy
 
         Equals -> boolToInt $ xx == yy
-        NotEquals -> boolToInt $ xx /= yy 
+        NotEquals -> boolToInt $ xx /= yy
 
 evalExpr (UnaryOp op x) = do
     xx <- evalExpr x
     return $ case op of
         UnaryMinus -> - xx
-        Not -> if xx == 0 then 1 else 0 
+        Not -> if xx == 0 then 1 else 0
 
-evalExpr (Function str args) = do 
-    vals <- mapM evalExpr args 
-    (vars, body) <- gets $ lookupFunc str 
-    modify $ newBindEnv vars vals 
+evalExpr (Function str args) = do
+    vals <- mapM evalExpr args
+    (vars, body) <- gets $ lookupFunc str
+    modify $ newBindEnv vars vals
     -- newEnv <- get 
     -- lift $ print newEnv 
-    doStatement body 
+    doStatement body
     modify safeParent
     return 1

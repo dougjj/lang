@@ -44,33 +44,34 @@ semiSep = P.semiSep lexer
 semiSep1 = P.semiSep1 lexer
 
 -- | Table lists operators and associativities. 
-table = [
-            [
-                Prefix negative --, Prefix positive
-            ] ,
-            [
-                Prefix logicalNot
-            ] ,
-            [
-                Infix times AssocLeft, Infix divide AssocLeft
-            ] ,
-            [
-                Infix plus AssocLeft, Infix minus AssocLeft
-            ] ,
-            [
-                Infix lt AssocLeft , Infix gt AssocLeft ,
-                Infix leq AssocLeft , Infix geq AssocLeft
-            ] ,
-            [
-                Infix equals AssocLeft , Infix notEquals AssocLeft
-            ] ,
-            [
-                Infix logicalAnd AssocLeft
-            ] ,
-            [
-                Infix logicalOr AssocLeft
-            ]
+table = 
+    [
+        [
+            Prefix negative --, Prefix positive
+        ] ,
+        [
+            Prefix logicalNot
+        ] ,
+        [
+            Infix times AssocLeft, Infix divide AssocLeft
+        ] ,
+        [
+            Infix plus AssocLeft, Infix minus AssocLeft
+        ] ,
+        [
+            Infix lt AssocLeft , Infix gt AssocLeft ,
+            Infix leq AssocLeft , Infix geq AssocLeft
+        ] ,
+        [
+            Infix equals AssocLeft , Infix notEquals AssocLeft
+        ] ,
+        [
+            Infix logicalAnd AssocLeft
+        ] ,
+        [
+            Infix logicalOr AssocLeft
         ]
+    ]
 
 negative, logicalNot :: ParsecT String u Identity (Expression -> Expression)
 negative = reservedOp "-" >> return(UnaryOp UnaryMinus)
@@ -113,7 +114,8 @@ statement = braces block
         <|> printer
         <|> assign
         <|> functionAssign
-        <|> input
+        <|> input 
+        <|> whileDo 
 
 block = chainl1 statement semicolon
 
@@ -133,6 +135,14 @@ functionAssign = do
     args <- parens (commaSep identifier)
     body <- braces block
     return $ FunctionAssignment name args body
+
+whileDo :: Parser Statement 
+whileDo = do 
+    reserved "while"
+    expr <- expression 
+    reserved "do" 
+    body <- statement 
+    return $ WhileDo expr body 
 
 assign :: Parser Statement
 assign = do

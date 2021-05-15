@@ -31,6 +31,7 @@ data Statement
      | Input String
      | Semicolon Statement Statement
      | FunctionAssignment String [String] Statement
+     | WhileDo Expression Statement
      deriving (Show, Eq)
 
 type Block = [Statement]
